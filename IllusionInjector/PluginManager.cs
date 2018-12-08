@@ -51,7 +51,7 @@ namespace IllusionInjector
 
 
             // DEBUG
-            Console.WriteLine("Running on Unity {0}", UnityEngine.Application.unityVersion);
+            Console.WriteLine("Running on Unity {0} using {1}", UnityEngine.Application.unityVersion, GetFrameworkVersion());
             Console.WriteLine("-----------------------------");
             Console.WriteLine("Loading plugins from {0} and found {1}", pluginDirectory, _Plugins.Count);
             Console.WriteLine("-----------------------------");
@@ -114,6 +114,36 @@ namespace IllusionInjector
                 && !type.IsAbstract 
                 && !type.IsInterface 
                 && type.GetConstructor(Type.EmptyTypes) != null;
+        }
+
+        private static string GetFrameworkVersion()
+        {
+            var version = Environment.Version.ToString();
+
+            try
+            {
+                switch (version)
+                {
+                    case "2.0.50727.1433":
+                        return ".NET 3.5 Equivalent";
+                    case "4.0.30319.17020":
+                        // For reasons unknown, switching to netstandard seems to set this back to .NET 4.0
+                        var netstandard = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "netstandard");
+                        if (netstandard != null)
+                            return $".NET Standard {netstandard.GetName().Version.ToString(2)}";
+
+                        goto default;
+                    case "4.0.30319.42000":
+                        return ".NET 4.x";
+                    default:
+                        return $".NET Framework {version}";
+                }
+            }
+            catch
+            {
+                // In case something goes wrong, return the best we can guess
+                return version;
+            }
         }
 
         public class AppInfo
