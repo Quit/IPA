@@ -110,7 +110,7 @@ namespace IllusionInjector
 
         private static bool IsValidPlugin(Type type)
         {
-            return type.GetInterface("IPlugin") != null 
+            return typeof(IPlugin).IsAssignableFrom(type)
                 && !type.IsAbstract 
                 && !type.IsInterface 
                 && type.GetConstructor(Type.EmptyTypes) != null;
