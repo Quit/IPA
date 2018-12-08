@@ -12,7 +12,7 @@ namespace IllusionInjector
         
         void Awake()
         {
-            if (Environment.CommandLine.Contains("--verbose") && !Screen.fullScreen)
+            if (Environment.CommandLine.Contains("--verbose") && (!Screen.fullScreen || Environment.CommandLine.Contains("--ipa-console")))
             {
                 Windows.GuiConsole.CreateConsole();
             }
