@@ -48,7 +48,7 @@ namespace IllusionInjector
             {
                 _Plugins.AddRange(LoadPluginsFromFile(Path.Combine(pluginDirectory, s), exeName));
             }
-            
+
 
             // DEBUG
             Console.WriteLine("Running on Unity {0}", UnityEngine.Application.unityVersion);
@@ -76,7 +76,7 @@ namespace IllusionInjector
 
                 foreach (Type t in assembly.GetTypes())
                 {
-                    if (t.GetInterface("IPlugin") != null)
+                    if (IsValidPlugin(t))
                     {
                         try
                         {
@@ -106,6 +106,14 @@ namespace IllusionInjector
             }
 
             return plugins;
+        }
+
+        private static bool IsValidPlugin(Type type)
+        {
+            return type.GetInterface("IPlugin") != null 
+                && !type.IsAbstract 
+                && !type.IsInterface 
+                && type.GetConstructor(Type.EmptyTypes) != null;
         }
 
         public class AppInfo
