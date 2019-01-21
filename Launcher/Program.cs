@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,41 +7,43 @@ using System.Windows.Forms;
 
 namespace Launcher
 {
-    static class Program
+    internal static class Program
     {
-        private static string[] TABOO_NAMES = {
+        private static readonly string[] TABOO_NAMES = {
             //"Start",
             //"Update",
             //"Awake",
             //"OnDestroy"
         };
-        private static string[] ENTRY_TYPES = { "Display" };
-       
+        private static readonly string[] ENTRY_TYPES = { "Display" };
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
-            try {
+            try
+            {
                 var execPath = Application.ExecutablePath;
                 var fileName = Path.GetFileNameWithoutExtension(execPath);
                 if (fileName.IndexOf("VR") == -1 && fileName.IndexOf("_") == -1)
                 {
                     Fail("File not named correctly!");
                 }
-                
+
                 bool vrMode = fileName.IndexOf("VR") > 0;
                 string baseName = execPath.Substring(0, vrMode
                                                         ? execPath.LastIndexOf("VR")
                                                         : execPath.LastIndexOf("_"));
-    
+
                 string executable = baseName + ".exe";
                 var file = new FileInfo(executable);
                 if (file.Exists)
                 {
                     var args = Environment.GetCommandLineArgs().ToList();
-                    if (vrMode) args.Add("--vr");
+                    if (vrMode)
+                        args.Add("--vr");
                     EnsureIPA(executable);
                     StartGame(executable, args.ToArray());
                 }
@@ -50,10 +51,12 @@ namespace Launcher
                 {
                     MessageBox.Show("Could not find: " + file.FullName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            } catch(Exception globalException) {
+            }
+            catch (Exception globalException)
+            {
                 MessageBox.Show(globalException.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
+
         }
 
         private static void EnsureIPA(string executable)
@@ -65,7 +68,7 @@ namespace Launcher
 
             var process = Process.Start(processStart);
             process.WaitForExit();
-            if(process.ExitCode != 0)
+            if (process.ExitCode != 0)
             {
                 Fail(process.StandardError.ReadToEnd());
             }
@@ -77,7 +80,8 @@ namespace Launcher
             Process.Start(executable, arguments);
         }
 
-        private static void Fail(string reason) {
+        private static void Fail(string reason)
+        {
             throw new Exception(reason);
         }
 

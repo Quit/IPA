@@ -1,13 +1,11 @@
-﻿using Mono.Cecil;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Mono.Cecil;
 
 namespace IPA.Patcher
 {
-    class VirtualizedModule
+    internal class VirtualizedModule
     {
         private const string ENTRY_TYPE = "Display";
 
@@ -38,7 +36,7 @@ namespace IPA.Patcher
 
             _Module = ModuleDefinition.ReadModule(_File.FullName, parameters);
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -55,17 +53,20 @@ namespace IPA.Patcher
 
         private void VirtualizeType(TypeDefinition type)
         {
-            if(type.IsSealed)
+            if (type.IsSealed)
             {
                 // Unseal
                 type.IsSealed = false;
             }
 
-            if (type.IsInterface) return;
-            if (type.IsAbstract) return;
+            if (type.IsInterface)
+                return;
+            if (type.IsAbstract)
+                return;
 
             // These two don't seem to work.
-            if (type.Name == "SceneControl" || type.Name == "ConfigUI") return;
+            if (type.Name == "SceneControl" || type.Name == "ConfigUI")
+                return;
 
             Console.WriteLine("Virtualizing {0}", type.Name);
             // Take care of sub types
@@ -97,7 +98,8 @@ namespace IPA.Patcher
 
             foreach (var field in type.Fields)
             {
-                if (field.IsPrivate) field.IsFamily = true;
+                if (field.IsPrivate)
+                    field.IsFamily = true;
             }
         }
 
@@ -106,7 +108,8 @@ namespace IPA.Patcher
             get
             {
                 var awakeMethods = _Module.GetTypes().SelectMany(t => t.Methods.Where(m => m.Name == "Awake"));
-                if (awakeMethods.Count() == 0) return false;
+                if (awakeMethods.Count() == 0)
+                    return false;
 
                 return ((float)awakeMethods.Count(m => m.IsVirtual) / awakeMethods.Count()) > 0.5f;
             }

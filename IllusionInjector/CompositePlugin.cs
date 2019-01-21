@@ -1,20 +1,18 @@
-﻿using IllusionPlugin;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
+using IllusionPlugin;
 
 namespace IllusionInjector
 {
     public class CompositePlugin : IPlugin
     {
-        IEnumerable<IPlugin> plugins;
+        private readonly IEnumerable<IPlugin> plugins;
 
         private delegate void CompositeCall(IPlugin plugin);
 
         public CompositePlugin(IEnumerable<IPlugin> plugins)
         {
-            this.plugins = plugins;  
+            this.plugins = plugins;
         }
 
         public void OnApplicationStart()
@@ -24,7 +22,7 @@ namespace IllusionInjector
 
         public void OnApplicationQuit()
         {
-            Invoke(plugin =>  plugin.OnApplicationQuit());
+            Invoke(plugin => plugin.OnApplicationQuit());
         }
 
         public void OnLevelWasLoaded(int level)

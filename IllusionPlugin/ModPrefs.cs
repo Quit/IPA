@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace IllusionPlugin
 {
@@ -58,7 +56,7 @@ namespace IllusionPlugin
                 return value;
             else if (autoSave)
                 SetInt(section, name, defaultValue);
-                
+
             return defaultValue;
         }
 
@@ -96,7 +94,8 @@ namespace IllusionPlugin
             if (sVal == "1" || sVal == "0")
             {
                 return sVal == "1";
-            } else if (autoSave)
+            }
+            else if (autoSave)
             {
                 SetBool(section, name, defaultValue);
             }

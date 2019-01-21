@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace IPA
 {
@@ -37,7 +34,7 @@ namespace IPA
         public static PatchContext Create(String[] args)
         {
             var context = new PatchContext();
-            
+
             context.Args = args;
             context.Executable = args[0];
             context.ProjectRoot = new FileInfo(context.Executable).Directory.FullName;
@@ -49,7 +46,7 @@ namespace IPA
             context.ProjectName = Path.GetFileNameWithoutExtension(context.Executable);
             context.DataPathDst = Path.Combine(context.ProjectRoot, context.ProjectName + "_Data");
             context.ManagedPath = Path.Combine(context.DataPathDst, "Managed");
-            context.EngineFile =  DetermineEngineFile(context.ManagedPath, "UnityEngine.CoreModule.dll", "UnityEngine.dll");
+            context.EngineFile = DetermineEngineFile(context.ManagedPath, "UnityEngine.CoreModule.dll", "UnityEngine.dll");
             context.AssemblyFile = Path.Combine(context.ManagedPath, "Assembly-Csharp.dll");
             context.BackupPath = Path.Combine(Path.Combine(context.IPARoot, "Backups"), context.ProjectName);
             context.ShortcutPath = Path.Combine(context.ProjectRoot, $"{context.ProjectName} (Patch & Launch)") + ".lnk";
@@ -61,10 +58,10 @@ namespace IPA
 
         private static string DetermineEngineFile(string basePath, params string[] candidates)
         {
-            foreach(var candidate in candidates)
+            foreach (var candidate in candidates)
             {
                 var fullPath = Path.Combine(basePath, candidate);
-                if(File.Exists(fullPath))
+                if (File.Exists(fullPath))
                 {
                     return fullPath;
                 }

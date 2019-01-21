@@ -1,29 +1,28 @@
-﻿using IPA.Patcher;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using IPA.Patcher;
 
 namespace IPA
 {
-  
+
     public class Program
     {
-        public enum Architecture {
+        public enum Architecture
+        {
             x86,
             x64,
             Unknown
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            if(args.Length < 1 || !args[0].EndsWith(".exe"))
+            if (args.Length < 1 || !args[0].EndsWith(".exe"))
             {
                 Fail("Drag an (executable) file on the exe!");
             }
@@ -44,7 +43,8 @@ namespace IPA
                     Install(context);
                     StartIfNeedBe(context);
                 }
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Fail(e.Message);
             }
@@ -52,7 +52,8 @@ namespace IPA
 
         private static void Validate(PatchContext c)
         {
-            if (!File.Exists(c.LauncherPathSrc)) Fail("Couldn't find DLLs! Make sure you extracted all contents of the release archive.");
+            if (!File.Exists(c.LauncherPathSrc))
+                Fail("Couldn't find DLLs! Make sure you extracted all contents of the release archive.");
             if (!Directory.Exists(c.DataPathDst) || !File.Exists(c.EngineFile))
             {
                 Fail("Game does not seem to be a Unity project. Could not find the libraries to patch.");
@@ -74,8 +75,8 @@ namespace IPA
 
                 Console.WriteLine("Architecture: {0}", architecture);
 
-                CopyAll(new DirectoryInfo(context.DataPathSrc), new DirectoryInfo(context.DataPathDst), force, backup, 
-                    (from, to) => NativePluginInterceptor(from, to, new DirectoryInfo(nativePluginFolder), isFlat, architecture) );
+                CopyAll(new DirectoryInfo(context.DataPathSrc), new DirectoryInfo(context.DataPathDst), force, backup,
+                    (from, to) => NativePluginInterceptor(from, to, new DirectoryInfo(nativePluginFolder), isFlat, architecture));
 
                 Console.WriteLine("Successfully updated files!");
 
@@ -109,9 +110,9 @@ namespace IPA
                 }
 
                 // Creating shortcut
-                if(!File.Exists(context.ShortcutPath))
+                if (!File.Exists(context.ShortcutPath))
                 {
-                    Console.Write("Creating shortcut to IPA ({0})... ",  context.IPA);
+                    Console.Write("Creating shortcut to IPA ({0})... ", context.IPA);
                     try
                     {
                         Shortcut.Create(
@@ -124,7 +125,8 @@ namespace IPA
                             iconPath: context.Executable
                         );
                         Console.WriteLine("Created");
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         Console.Error.WriteLine("Failed to create shortcut, but game was patched!");
                     }
@@ -145,15 +147,16 @@ namespace IPA
         private static void Revert(PatchContext context)
         {
             Console.Write("Restoring backup... ");
-            if(BackupManager.Restore(context))
+            if (BackupManager.Restore(context))
             {
                 Console.WriteLine("Done!");
-            } else
+            }
+            else
             {
                 Console.WriteLine("Already vanilla!");
             }
 
-           
+
             if (File.Exists(context.ShortcutPath))
             {
                 Console.WriteLine("Deleting shortcut...");
@@ -177,7 +180,7 @@ namespace IPA
 
             argList.RemoveAt(0);
 
-            if(launch)
+            if (launch)
             {
                 Process.Start(context.Executable, Args(argList.ToArray()));
             }
@@ -199,11 +202,13 @@ namespace IPA
                         // 32 bit
                         yield return new FileInfo(Path.Combine(nativePluginFolder.FullName, relevantBit.Substring("x86".Length + 1)));
                     }
-                    else if(is64Bit && (preferredArchitecture == Architecture.x64 || preferredArchitecture == Architecture.Unknown))
+                    else if (is64Bit && (preferredArchitecture == Architecture.x64 || preferredArchitecture == Architecture.Unknown))
                     {
                         // 64 bit
                         yield return new FileInfo(Path.Combine(nativePluginFolder.FullName, relevantBit.Substring("x86_64".Length + 1)));
-                    } else {
+                    }
+                    else
+                    {
                         // Throw away
                         yield break;
                     }
@@ -231,7 +236,7 @@ namespace IPA
 
         public static void CopyAll(DirectoryInfo source, DirectoryInfo target, bool aggressive, BackupUnit backup, Func<FileInfo, FileInfo, IEnumerable<FileInfo>> interceptor = null)
         {
-            if(interceptor == null)
+            if (interceptor == null)
             {
                 interceptor = PassThroughInterceptor;
             }
@@ -239,7 +244,8 @@ namespace IPA
             // Copy each file into the new directory.
             foreach (FileInfo fi in source.GetFiles())
             {
-                foreach(var targetFile in interceptor(fi, new FileInfo(Path.Combine(target.FullName, fi.Name)))) {
+                foreach (var targetFile in interceptor(fi, new FileInfo(Path.Combine(target.FullName, fi.Name))))
+                {
                     if (!targetFile.Exists || targetFile.LastWriteTimeUtc < fi.LastWriteTimeUtc || aggressive)
                     {
                         targetFile.Directory.Create();
@@ -259,8 +265,7 @@ namespace IPA
             }
         }
 
-
-        static void Fail(string message)
+        private static void Fail(string message)
         {
             Console.Error.Write("ERROR: " + message);
             if (!Environment.CommandLine.Contains("--nowait"))
@@ -296,7 +301,7 @@ namespace IPA
             using (var reader = new BinaryReader(File.OpenRead(assembly)))
             {
                 var header = reader.ReadUInt16();
-                if(header == 0x5a4d)
+                if (header == 0x5a4d)
                 {
                     reader.BaseStream.Seek(60, SeekOrigin.Begin); // this location contains the offset for the PE header
                     var peOffset = reader.ReadUInt32();
@@ -312,7 +317,8 @@ namespace IPA
                         return Architecture.x64;
                     else
                         return Architecture.Unknown;
-                } else
+                }
+                else
                 {
                     // Not a supported binary
                     return Architecture.Unknown;

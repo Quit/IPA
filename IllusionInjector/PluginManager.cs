@@ -1,13 +1,11 @@
-﻿using IllusionPlugin;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using IllusionPlugin;
 
 namespace IllusionInjector
 {
@@ -22,7 +20,7 @@ namespace IllusionInjector
         {
             get
             {
-                if(_Plugins == null)
+                if (_Plugins == null)
                 {
                     LoadPlugins();
                 }
@@ -41,8 +39,9 @@ namespace IllusionInjector
             Console.WriteLine(exeName);
             _Plugins = new List<IPlugin>();
 
-            if (!Directory.Exists(pluginDirectory)) return;
-            
+            if (!Directory.Exists(pluginDirectory))
+                return;
+
             String[] files = Directory.GetFiles(pluginDirectory, "*.dll");
             foreach (var s in files)
             {
@@ -80,7 +79,6 @@ namespace IllusionInjector
                     {
                         try
                         {
-
                             IPlugin pluginInstance = Activator.CreateInstance(t) as IPlugin;
                             string[] filter = null;
 
@@ -88,8 +86,8 @@ namespace IllusionInjector
                             {
                                 filter = ((IEnhancedPlugin)pluginInstance).Filter;
                             }
-                            
-                            if(filter == null || Enumerable.Contains(filter, exeName, StringComparer.OrdinalIgnoreCase))
+
+                            if (filter == null || Enumerable.Contains(filter, exeName, StringComparer.OrdinalIgnoreCase))
                                 plugins.Add(pluginInstance);
                         }
                         catch (Exception e)
@@ -111,8 +109,8 @@ namespace IllusionInjector
         private static bool IsValidPlugin(Type type)
         {
             return typeof(IPlugin).IsAssignableFrom(type)
-                && !type.IsAbstract 
-                && !type.IsInterface 
+                && !type.IsAbstract
+                && !type.IsInterface
                 && type.GetConstructor(Type.EmptyTypes) != null;
         }
 

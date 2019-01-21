@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace IPA.Tests
@@ -26,7 +22,7 @@ namespace IPA.Tests
 
         // Not-flat -> Not-Flat
         [InlineData("native/x86/from.dll", "native/x86/to.dll", "native", false, new string[] { "native/x86/to.dll" })]
-        [InlineData("native/x86_64/from.dll", "native/x86_64/to.dll", "native", false, new string[] { "native/x86_64/to.dll"  })]
+        [InlineData("native/x86_64/from.dll", "native/x86_64/to.dll", "native", false, new string[] { "native/x86_64/to.dll" })]
 
         public void CopiesCorrectly(string from, string to, string nativeFolder, bool isFlat, string[] expected)
         {

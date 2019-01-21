@@ -1,14 +1,13 @@
-﻿using Mono.Cecil;
-using Mono.Cecil.Cil;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Mono.Cecil;
+using Mono.Cecil.Cil;
 
 namespace IPA.Patcher
 {
-    class PatchedModule
+    internal class PatchedModule
     {
         private static readonly string[] ENTRY_TYPES = { "Input", "Display" };
 
@@ -36,7 +35,7 @@ namespace IPA.Patcher
             {
                 AssemblyResolver = resolver,
             };
-            
+
             _Module = ModuleDefinition.ReadModule(_File.FullName, parameters);
         }
 
@@ -46,7 +45,8 @@ namespace IPA.Patcher
             {
                 foreach (var @ref in _Module.AssemblyReferences)
                 {
-                    if (@ref.Name == "IllusionInjector") return true;
+                    if (@ref.Name == "IllusionInjector")
+                        return true;
                 }
                 return false;
             }
@@ -61,18 +61,19 @@ namespace IPA.Patcher
 
             _Module.AssemblyReferences.Add(nameReference);
             int patched = 0;
-            foreach(var type in FindEntryTypes())
+            foreach (var type in FindEntryTypes())
             {
-                if(PatchType(type, injector))
+                if (PatchType(type, injector))
                 {
                     patched++;
                 }
             }
-            
-            if(patched > 0)
+
+            if (patched > 0)
             {
                 _Module.Write(_File.FullName);
-            } else
+            }
+            else
             {
                 throw new Exception("Could not find any entry type!");
             }

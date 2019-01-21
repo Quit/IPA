@@ -3,10 +3,10 @@ using System.Runtime.InteropServices;
 
 namespace IPA
 {
-    public class Shortcut
+    public static class Shortcut
     {
         private static Type m_type = Type.GetTypeFromProgID("WScript.Shell");
-        private static object m_shell = Activator.CreateInstance(m_type);
+        private static readonly object m_shell = Activator.CreateInstance(m_type);
 
         [ComImport, TypeLibType((short)0x1040), Guid("F935DC23-1CF0-11D0-ADB9-00C04FD58A0B")]
         private interface IWshShortcut

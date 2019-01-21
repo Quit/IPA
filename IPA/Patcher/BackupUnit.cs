@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace IPA.Patcher
 {
@@ -30,13 +27,14 @@ namespace IPA.Patcher
             _Context = context;
             _BackupPath = new DirectoryInfo(Path.Combine(_Context.BackupPath, Name));
         }
-        
+
         public static BackupUnit FromDirectory(DirectoryInfo directory, PatchContext context)
         {
             var unit = new BackupUnit(context, directory.Name);
 
             // Parse directory
-            foreach(var file in directory.GetFiles("*", SearchOption.AllDirectories)) {
+            foreach (var file in directory.GetFiles("*", SearchOption.AllDirectories))
+            {
                 var relativePath = file.FullName.Substring(directory.FullName.Length + 1);
                 unit._Files.Add(relativePath);
             }
@@ -60,7 +58,7 @@ namespace IPA.Patcher
         /// <param name="path"></param>
         public void Add(FileInfo file)
         {
-            if(!file.FullName.StartsWith(_Context.ProjectRoot))
+            if (!file.FullName.StartsWith(_Context.ProjectRoot))
             {
                 Console.Error.WriteLine("Invalid file path for backup! {0}", file);
                 return;
@@ -68,8 +66,8 @@ namespace IPA.Patcher
 
             var relativePath = file.FullName.Substring(_Context.ProjectRoot.Length + 1);
             var backupPath = new FileInfo(Path.Combine(_BackupPath.FullName, relativePath));
-            
-            if(_Files.Contains(relativePath))
+
+            if (_Files.Contains(relativePath))
             {
                 Console.WriteLine("Skipping backup of {0}", relativePath);
                 return;
@@ -81,7 +79,8 @@ namespace IPA.Patcher
             if (file.Exists)
             {
                 file.CopyTo(backupPath.FullName);
-            } else
+            }
+            else
             {
                 // Make empty file
                 backupPath.Create().Close();
@@ -96,7 +95,7 @@ namespace IPA.Patcher
         /// </summary>
         public void Restore()
         {
-            foreach(var relativePath in _Files)
+            foreach (var relativePath in _Files)
             {
                 Console.WriteLine("Restoring {0}", relativePath);
                 // Original version
@@ -110,15 +109,18 @@ namespace IPA.Patcher
                         Console.WriteLine("  {0} => {1}", backupFile.FullName, target.FullName);
                         target.Directory.Create();
                         backupFile.CopyTo(target.FullName, true);
-                    } else
+                    }
+                    else
                     {
                         Console.WriteLine("  x {0}", target.FullName);
-                        if(target.Exists)
+                        if (target.Exists)
                         {
                             target.Delete();
                         }
                     }
-                } else {
+                }
+                else
+                {
                     Console.Error.WriteLine("Backup not found!");
                 }
             }

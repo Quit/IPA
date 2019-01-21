@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace IllusionInjector
 {
-    class Bootstrapper : MonoBehaviour
+    internal class Bootstrapper : MonoBehaviour
     {
-        public event Action Destroyed = delegate {};
-        
-        void Awake()
+        public event Action Destroyed = delegate { };
+
+        private void Awake()
         {
             if (Environment.CommandLine.Contains("--verbose") && (!Screen.fullScreen || Environment.CommandLine.Contains("--ipa-console")))
             {
@@ -18,11 +15,12 @@ namespace IllusionInjector
             }
         }
 
-        void Start()
+        private void Start()
         {
             Destroy(gameObject);
         }
-        void OnDestroy()
+
+        private void OnDestroy()
         {
             Destroyed();
         }

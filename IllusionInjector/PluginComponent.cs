@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace IllusionInjector
 {
@@ -16,7 +13,7 @@ namespace IllusionInjector
             return new GameObject("IPA_PluginManager").AddComponent<PluginComponent>();
         }
 
-        void Awake()
+        private void Awake()
         {
             DontDestroyOnLoad(gameObject);
 
@@ -24,12 +21,12 @@ namespace IllusionInjector
             plugins.OnApplicationStart();
         }
 
-        void Start()
+        private void Start()
         {
             OnLevelWasLoaded(Application.loadedLevel);
         }
 
-        void Update()
+        private void Update()
         {
             if (freshlyLoaded)
             {
@@ -39,32 +36,32 @@ namespace IllusionInjector
             plugins.OnUpdate();
         }
 
-        void LateUpdate()
+        private void LateUpdate()
         {
             plugins.OnLateUpdate();
         }
 
-        void FixedUpdate()
+        private void FixedUpdate()
         {
             plugins.OnFixedUpdate();
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             if (!quitting)
             {
                 Create();
             }
         }
-        
-        void OnApplicationQuit()
+
+        private void OnApplicationQuit()
         {
             plugins.OnApplicationQuit();
 
             quitting = true;
         }
 
-        void OnLevelWasLoaded(int level)
+        private void OnLevelWasLoaded(int level)
         {
             plugins.OnLevelWasLoaded(level);
             freshlyLoaded = true;
